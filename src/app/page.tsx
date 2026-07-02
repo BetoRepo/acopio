@@ -100,8 +100,8 @@ export default function HomePage() {
 
         <section className="mx-auto w-full max-w-5xl rounded-3xl border border-purple-300/40 bg-white/90 p-8 shadow-xl shadow-purple-500/20 backdrop-blur-sm">
           <div className="mb-4">
-            <p className="text-sm uppercase tracking-[0.3em] text-purple-600">Rutas y entregas</p>
-            <h2 className="mt-2 text-3xl font-semibold text-violet-950">Próximas entregas en la ciudad</h2>
+            <p className="text-sm uppercase tracking-[0.3em] text-purple-600">Donaciones</p>
+            <h2 className="mt-2 text-3xl font-semibold text-violet-950">Donativos Realizados</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {entregasMapa.length > 0 ? (
@@ -118,7 +118,7 @@ export default function HomePage() {
               ))
             ) : (
               <div className="rounded-3xl border border-dashed border-purple-300 bg-violet-50 p-6 text-violet-700">
-                No hay entregas programadas por el momento.
+                No hay donaciones registradas por el momento.
               </div>
             )}
           </div>
