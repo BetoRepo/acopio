@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { supabaseClient } from '../lib/supabaseClient';
 import { ConfiguracionHomeRow, EntregasMapaRow, InventarioRow } from '../types/database.types';
-import Hero from '../components/publico/Hero';
-import Termometro from '../components/publico/Termometro';
-import Inventario from '../components/publico/Inventario';
-import Emergencias from '../components/publico/Emergencias';
+import Hero from 'src/components/publico/Hero';
+import Termometro from 'src/components/publico/Termometro';
+import Inventario from 'src/components/publico/Inventario';
+import Emergencias from 'src/components/publico/Emergencias';
 
 export default function HomePage() {
   const [inventario, setInventario] = useState<InventarioRow[]>([]);
