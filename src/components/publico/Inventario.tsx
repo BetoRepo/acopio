@@ -5,6 +5,11 @@ interface InventarioProps {
 }
 
 export default function Inventario({ inventario }: InventarioProps) {
+  const categoriaTotales = inventario.reduce<Record<string, number>>((acc, item) => {
+    acc[item.categoria] = (acc[item.categoria] ?? 0) + item.cantidad_actual;
+    return acc;
+  }, {});
+
   return (
     <section id="inventario" className="mx-auto w-full max-w-6xl rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -13,8 +18,21 @@ export default function Inventario({ inventario }: InventarioProps) {
           <h2 className="mt-2 text-3xl font-semibold text-slate-900">Monitoreo de existencias</h2>
         </div>
         <p className="max-w-xl text-sm leading-6 text-slate-600">
-          Revisa los productos disponibles, identifica lo urgente y organiza la distribución a las comunidades en Caracas.
+          Revisa los productos disponibles, identifica lo urgente y observa cuántos artículos hay por categoría.
         </p>
+      </div>
+
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Object.entries(categoriaTotales).map(([categoria, total]) => (
+          <div key={categoria} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">{categoria}</p>
+            <p className="mt-3 text-3xl font-bold text-slate-900">{total}</p>
+            <p className="mt-1 text-sm text-slate-600">items disponibles</p>
+          </div>
+        ))}
+        {Object.keys(categoriaTotales).length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-5 text-slate-500">No hay categorías para mostrar.</div>
+        ) : null}
       </div>
 
       <div className="overflow-x-auto rounded-3xl border border-slate-100 bg-slate-50">
@@ -30,18 +48,37 @@ export default function Inventario({ inventario }: InventarioProps) {
           </thead>
           <tbody>
             {inventario.map((item) => {
-              const urgent = item.cantidad_actual <= item.cantidad_minima;
+              const status =
+                item.cantidad_actual === 0
+                  ? 'empty'
+                  : item.cantidad_actual > item.cantidad_minima
+                  ? 'full'
+                  : 'low';
+              const rowClass =
+                status === 'full'
+                  ? 'bg-emerald-50'
+                  : status === 'low'
+                  ? 'bg-amber-50'
+                  : 'bg-red-50';
+              const textClass =
+                status === 'full'
+                  ? 'text-emerald-700'
+                  : status === 'low'
+                  ? 'text-amber-700'
+                  : 'text-red-700';
+              const statusLabel =
+                status === 'full' ? 'OK' : status === 'low' ? 'Bajo' : 'Agotado';
+
               return (
-                <tr
-                  key={item.id}
-                  className={`border-t border-slate-200 transition-colors duration-300 ${urgent ? 'bg-red-50' : 'bg-white'}`}
-                >
+                <tr key={item.id} className={`border-t border-slate-200 transition-colors duration-300 ${rowClass}`}>
                   <td className="px-6 py-4 font-semibold text-slate-900">{item.producto}</td>
                   <td className="px-6 py-4 text-slate-600">{item.categoria}</td>
                   <td className="px-6 py-4">
-                    <div className="flex flex-col gap-1">
-                      <span className={`font-semibold ${urgent ? 'text-red-700' : 'text-slate-900'}`}>{item.cantidad_actual}</span>
-                      {urgent ? <span className="text-xs font-semibold text-red-600">⚠️ ¡Urge!</span> : null}
+                    <div className="flex items-center gap-3">
+                      <span className={`font-semibold ${textClass}`}>{item.cantidad_actual}</span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${status === 'full' ? 'bg-emerald-100 text-emerald-800' : status === 'low' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`}>
+                        {statusLabel}
+                      </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-slate-700">{item.cantidad_minima}</td>

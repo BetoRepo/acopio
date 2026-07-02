@@ -22,3 +22,15 @@ export interface ConfiguracionHomeRow {
   meta_termometro_global: number;
   recaudado_termometro_global: number;
 }
+
+export interface InventarioHistorialRow {
+  id: string;
+  inventario_id: string | null;
+  producto: string;
+  categoria: string;
+  cantidad_antes: number;
+  cantidad_despues: number;
+  operacion: string;
+  nota: string;
+  creado_en: string;
+}
