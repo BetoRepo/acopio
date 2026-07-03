@@ -12,6 +12,22 @@ export default function HomePage() {
   const [inventario, setInventario] = useState<InventarioRow[]>([]);
   const [entregasMapa, setEntregasMapa] = useState<EntregasMapaRow[]>([]);
   const [configuracion, setConfiguracion] = useState<ConfiguracionHomeRow | null>(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const carouselImages = [
+    '/images/carousel-1.jpg',
+    '/images/carousel-2.jpg',
+    '/images/carousel-3.jpg',
+  ];
+
+  const carouselCaptions = [
+    'Scouts y voluntarios organizando la recepción de donaciones.',
+    'Nuestra carpa oficial con la flor de lis, diagonal al Teatro Junín.',
+    'Entregas en curso: apoyando a las comunidades cercanas.',
+  ];
+
+  const prevCarousel = () => setCarouselIndex((current) => (current - 1 + carouselImages.length) % carouselImages.length);
+  const nextCarousel = () => setCarouselIndex((current) => (current + 1) % carouselImages.length);
 
   useEffect(() => {
     async function fetchData() {
@@ -53,48 +69,118 @@ export default function HomePage() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10">
         <Hero frase_de_accion="Juntos llenamos la ciudad de esperanza y recursos" />
         <Termometro meta={meta} recaudado={recaudado} />
-        <Inventario inventario={inventario} />
-        <Emergencias />
 
         <section className="mx-auto w-full max-w-5xl rounded-3xl border border-purple-500/30 bg-white/95 p-8 shadow-xl shadow-purple-500/20 backdrop-blur-sm">
           <div className="space-y-6">
             <div className="rounded-3xl border border-purple-200 bg-violet-50 p-6">
-              <p className="text-sm uppercase tracking-[0.35em] text-purple-600">Centro de acopio</p>
-              <h2 className="mt-2 text-3xl font-semibold text-violet-950">Ubicación y horarios</h2>
+              <p className="text-sm uppercase tracking-[0.35em] text-purple-600">Inventario activo</p>
+              <h2 className="mt-2 text-3xl font-semibold text-violet-950">Monitoreo de existencias</h2>
               <p className="mt-3 text-sm leading-6 text-violet-700">
-                Nuestro centro de acopio está ubicado en Plaza O&apos;Leary. Recibimos donaciones los sábados y domingos de 9:00 a.m. a 4:00 p.m.
+                Aquí compartimos solo el estado general de la campaña. No mostramos al público las cantidades exactas de cada producto.
               </p>
             </div>
+            <div className="rounded-3xl border border-dashed border-purple-300 bg-violet-50/80 p-6 text-violet-800">
+              <p className="text-sm uppercase tracking-[0.35em] text-purple-700">Estado actual</p>
+              <p className="mt-3 text-sm leading-6">
+                Tenemos apoyo activo y seguimos recibiendo donaciones. Si quieres colaborar, trae insumos para bebés, alimentos, higiene o ropa.
+              </p>
+              <p className="mt-4 rounded-3xl border border-purple-200 bg-white/90 p-4 text-sm text-violet-900">
+                No hay categorías detalladas para mostrar en esta vista pública.
+              </p>
+            </div>
+          </div>
+        </section>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-purple-300/60 bg-violet-100 p-6">
-                <p className="text-sm uppercase tracking-[0.35em] text-purple-700">Qué puedes donar</p>
-                <ul className="mt-4 space-y-3 text-sm text-violet-800">
-                  <li>Alimentos no perecederos</li>
-                  <li>Higiene personal</li>
-                  <li>Insumos médicos</li>
-                  <li>Ropa</li>
-                </ul>
-              </div>
-              <div className="rounded-3xl border border-purple-300/60 bg-violet-100 p-6">
-                <p className="text-sm uppercase tracking-[0.35em] text-purple-700">Ejemplos de kits</p>
-                <h3 className="mt-2 text-2xl font-semibold text-violet-950">Kits recomendados</h3>
-                <ul className="mt-4 space-y-3 text-sm text-violet-800">
-                  <li>
-                    <strong>Kit A (Higiene Personal):</strong> 2 jabones en barra, 1 crema dental grande, 2 cepillos de dientes, 1 paquete de toallas sanitarias, 2 rollos de papel higiénico.
-                  </li>
-                  <li>
-                    <strong>Kit B (Alimentos No Perecederos):</strong> 3 latas de proteína (atún/sardina), 2 kg de arroz/pasta, 1 kg de granos, 1 L de aceite, 1 kg de harina de maíz, 1 sobre de leche o café.
-                  </li>
-                  <li>
-                    <strong>Kit C (Insumos Médicos):</strong> 1 alcohol o agua oxigenada, gasas, algodón, 1 adhesivo médico, 1 caja de curitas, 2 sueros orales, analgésicos vigentes (acetaminofén).
-                  </li>
-                  <li>
-                    <strong>Kit D (Logística y Limpieza):</strong> 1 par de guantes resistentes, 1 paquete de bolsas de basura gruesas, 3 tapabocas, 1 cloro pequeño hermético, linterna LED con pilas.
-                  </li>
-                </ul>
+        <section className="mx-auto w-full max-w-5xl rounded-3xl border border-purple-500/30 bg-white/95 p-8 shadow-xl shadow-purple-500/20 backdrop-blur-sm">
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-6 rounded-3xl border border-purple-200 bg-violet-50 p-6">
+              <p className="text-sm uppercase tracking-[0.35em] text-purple-600">Centro de acopio</p>
+              <h2 className="text-3xl font-semibold text-violet-950">Ubicación y horarios</h2>
+              <p className="mt-3 text-sm leading-6 text-violet-700">
+                Estamos en Plaza O&apos;Leary. Busca a los scouts diagonal al Teatro Junín: nuestra carpa es el punto oficial de los scouts, no la carpa gigante blanca.
+              </p>
+              <p className="text-sm leading-6 text-violet-700">
+                Recibimos donaciones los sábados y domingos de 9:00 a.m. a 4:00 p.m. El equipo de Scouts está listo para recibir lo que puedas aportar.
+              </p>
+              <div className="rounded-3xl border border-purple-300 bg-violet-100 p-4 text-violet-900">
+                <p className="text-sm font-semibold">Consejo rápido</p>
+                <p className="mt-2 text-sm leading-6">
+                  Si no sabes dónde parar, pregunta por los de verde o por la flor de lis: ese es nuestro punto de encuentro.
+                </p>
               </div>
             </div>
+            <div className="rounded-3xl border border-purple-200 bg-violet-100 p-6">
+              <p className="text-sm uppercase tracking-[0.35em] text-purple-700">Donaciones urgentes</p>
+              <ul className="mt-4 space-y-3 text-sm text-violet-800">
+                <li>Insumos para bebés (pañales, leche, artículos de cuidado)</li>
+                <li>Alimentos no perecederos</li>
+                <li>Higiene personal</li>
+                <li>Ropa en buen estado</li>
+              </ul>
+              <p className="mt-4 text-sm leading-6 text-violet-700">
+                Estamos recibiendo donaciones de forma espontánea; esta campaña nació del trabajo hecho el domingo y aún seguimos apoyando en la zona.
+              </p>
+              <div className="mt-6 rounded-3xl bg-gradient-to-r from-violet-700 to-purple-700 p-4 text-white">
+                <p className="text-sm uppercase tracking-[0.35em] text-purple-200">Lleva esto si puedes</p>
+                <p className="mt-2 text-sm leading-6 text-white/90">Busca a los de verde y dona lo que tengas: cada aporte suma.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-5xl overflow-hidden rounded-[2.5rem] border border-purple-400/30 bg-gradient-to-br from-violet-900 via-purple-950 to-fuchsia-950 p-8 text-white shadow-2xl shadow-purple-900/40">
+          <div className="mb-6 flex flex-col gap-4 text-center">
+            <p className="text-sm uppercase tracking-[0.35em] text-purple-200">Trabajo scout</p>
+            <h2 className="text-3xl font-semibold">Fotos del trabajo realizado</h2>
+            <p className="mx-auto max-w-2xl text-sm text-purple-100/80">
+              Compartimos el avance de la campaña con fotos del día a día. Pronto subiremos más contenido a Instagram para que puedas ver cómo apoyamos a las comunidades.
+            </p>
+          </div>
+
+          <div className="relative flex items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/10 p-6 shadow-xl shadow-purple-900/20 backdrop-blur-sm">
+            <button
+              type="button"
+              onClick={prevCarousel}
+              className="absolute left-4 z-10 rounded-full border border-white/20 bg-black/20 px-3 py-2 text-2xl font-semibold text-white transition hover:bg-black/30"
+              aria-label="Anterior foto"
+            >
+              ‹
+            </button>
+
+            <div className="mx-auto flex w-full max-w-4xl items-center justify-center">
+              <div className="relative h-[320px] w-full overflow-hidden rounded-3xl bg-slate-900 sm:h-[420px]">
+                <img
+                  src={carouselImages[carouselIndex]}
+                  alt={`Foto ${carouselIndex + 1} del trabajo scout`}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-950/90 to-transparent px-6 py-4">
+                  <p className="text-sm text-purple-100/90">{carouselCaptions[carouselIndex]}</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={nextCarousel}
+              className="absolute right-4 z-10 rounded-full border border-white/20 bg-black/20 px-3 py-2 text-2xl font-semibold text-white transition hover:bg-black/30"
+              aria-label="Siguiente foto"
+            >
+              ›
+            </button>
+          </div>
+
+          <div className="mt-5 flex items-center justify-center gap-3">
+            {carouselImages.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => setCarouselIndex(index)}
+                className={`h-3 w-3 rounded-full transition ${
+                  index === carouselIndex ? 'bg-purple-300' : 'bg-white/30'
+                }`}
+              />
+            ))}
           </div>
         </section>
 

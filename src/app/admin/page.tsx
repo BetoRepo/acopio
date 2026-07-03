@@ -29,8 +29,6 @@ export default function AdminPage() {
   const [productoName, setProductoName] = useState('');
   const [categoria, setCategoria] = useState('Alimentos');
   const [nuevaCantidad, setNuevaCantidad] = useState('');
-  const [metaDonativos, setMetaDonativos] = useState('');
-  const [tareaDelDia, setTareaDelDia] = useState('');
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [historial, setHistorial] = useState<InventarioHistorialRow[]>([]);
@@ -207,57 +205,25 @@ export default function AdminPage() {
     await refreshHistorial();
   };
 
-  const handleActualizarTarea = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setMensaje(null);
-    setLoading(true);
-
-    if (!tareaDelDia) {
-      setMensaje('Escribe la tarea del día antes de guardar.');
-      setLoading(false);
-      return;
-    }
-
-    const updatePayload: any = { tarea_del_dia: tareaDelDia };
-    if (metaDonativos && !Number.isNaN(Number(metaDonativos))) {
-      updatePayload.meta_termometro_global = Number(metaDonativos);
-    }
-
-    const { error } = await supabaseClient
-      .from('configuracion_home')
-      .update(updatePayload)
-      .eq('id_tipo', 'principal');
-
-    setLoading(false);
-
-    if (error) {
-      setMensaje(`Error al actualizar la tarea: ${error.message}`);
-      return;
-    }
-
-    setMensaje('Tarea del día actualizada con éxito.');
-    setTareaDelDia('');
-  };
-
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
-          <h1 className="text-3xl font-semibold text-slate-900">Panel de administración</h1>
-          <p className="mt-2 text-sm text-slate-600">Desde aquí puedes actualizar el inventario y cambiar la tarea del día que aparece en el home.</p>
+    <main className="min-h-screen bg-gradient-to-br from-violet-950 via-violet-900 to-purple-950 px-4 py-10 sm:px-6 lg:px-8 text-slate-100">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+        <div className="rounded-[2rem] border border-purple-500/30 bg-white/5 p-8 shadow-xl shadow-purple-950/30 backdrop-blur-sm">
+          <h1 className="text-3xl font-semibold text-white">Panel de administración</h1>
+          <p className="mt-2 text-sm text-purple-100/80">Desde aquí puedes actualizar el inventario y gestionar donativos de forma sencilla.</p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
-            <h2 className="text-2xl font-semibold text-slate-900">Actualizar stock</h2>
-            <p className="mt-2 text-sm text-slate-600">Ingresa el ID del producto y la cantidad actualizada. Si el producto no existe, se creará con valores básicos.</p>
+        <div className="grid gap-8">
+          <div className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
+            <h2 className="text-2xl font-semibold text-white">Actualizar stock</h2>
+            <p className="mt-2 text-sm text-purple-100/80">Ingresa el nombre del producto y la cantidad actualizada. Si el producto no existe, se creará con valores básicos.</p>
             <form className="mt-6 space-y-5" onSubmit={handleActualizarStock}>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Categoría</span>
+                <span className="text-sm font-medium text-purple-100/80">Categoría</span>
                 <select
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                  className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                 >
                   <option>Alimentos</option>
                   <option>Higiene personal</option>
@@ -266,22 +232,22 @@ export default function AdminPage() {
                 </select>
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Nombre del producto</span>
+                <span className="text-sm font-medium text-purple-100/80">Nombre del producto</span>
                 <input
                   value={productoName}
                   onChange={(event) => setProductoName(event.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                  className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                   placeholder="Ej. Harina, Jabon, Venda..."
                   required
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-slate-700">Nueva cantidad</span>
+                <span className="text-sm font-medium text-purple-100/80">Nueva cantidad</span>
                 <input
                   type="number"
                   value={nuevaCantidad}
                   onChange={(event) => setNuevaCantidad(event.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                  className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                   min="0"
                   required
                 />
@@ -289,66 +255,31 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex w-full items-center justify-center rounded-3xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-3xl bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? 'Procesando...' : 'Actualizar stock'}
               </button>
             </form>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
-            <h2 className="text-2xl font-semibold text-slate-900">Tarea del día</h2>
-            <p className="mt-2 text-sm text-slate-600">Actualiza el mensaje principal que la página de inicio mostrará a voluntarios y donantes.</p>
-            <form className="mt-6 space-y-5" onSubmit={handleActualizarTarea}>
-              <label className="block">
-                <span className="text-sm font-medium text-slate-700">Descripción</span>
-                <textarea
-                  value={tareaDelDia}
-                  onChange={(event) => setTareaDelDia(event.target.value)}
-                  rows={6}
-                  className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                  placeholder="Escribe la tarea del día..."
-                  required
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-slate-700">Meta de donativos</span>
-                <input
-                  type="number"
-                  value={metaDonativos}
-                  onChange={(e) => setMetaDonativos(e.target.value)}
-                  className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                  min="0"
-                  placeholder="Cantidad objetivo (ej. 10000)"
-                />
-              </label>
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex w-full items-center justify-center rounded-3xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? 'Guardando...' : 'Actualizar tarea'}
-              </button>
-            </form>
-          </div>
         </div>
 
         {mensaje ? (
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-4 text-sm text-slate-700 shadow-sm">
+          <div className="rounded-3xl border border-purple-500/30 bg-white/5 px-6 py-4 text-sm text-purple-100 shadow-sm backdrop-blur-sm">
             {mensaje}
           </div>
         ) : null}
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
-          <h2 className="text-2xl font-semibold text-slate-900">Enviar donativo</h2>
-          <p className="mt-2 text-sm text-slate-600">Registra una donación, resta el stock y anota a dónde fue donada.</p>
+        <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
+          <h2 className="text-2xl font-semibold text-white">Enviar donativo</h2>
+          <p className="mt-2 text-sm text-purple-100/80">Registra una donación, resta el stock y anota a dónde fue donada.</p>
           <form className="mt-6 grid gap-4 md:grid-cols-4" onSubmit={handleEnviarDonativo}>
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Producto</span>
+              <span className="text-sm font-medium text-purple-100/80">Producto</span>
               <select
                 value={selectedProductoId}
                 onChange={(e) => setSelectedProductoId(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
               >
                 {productos.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -359,34 +290,34 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Cantidad a enviar</span>
+              <span className="text-sm font-medium text-purple-100/80">Cantidad a enviar</span>
               <input
                 type="number"
                 value={donationQuantity}
                 onChange={(e) => setDonationQuantity(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                 min="1"
                 required
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Destino / Comunidad</span>
+              <span className="text-sm font-medium text-purple-100/80">Destino / Comunidad</span>
               <input
                 value={donationDestination}
                 onChange={(e) => setDonationDestination(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                 placeholder="Nombre del lugar o comunidad"
                 required
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Persona destinataria</span>
+              <span className="text-sm font-medium text-purple-100/80">Persona destinataria</span>
               <input
                 value={donationRecipient}
                 onChange={(e) => setDonationRecipient(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
                 placeholder="Nombre de la persona que recibe"
                 required
               />
@@ -396,7 +327,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex w-full items-center justify-center rounded-3xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-3xl bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? 'Procesando...' : 'Registrar donativo'}
               </button>
@@ -404,12 +335,12 @@ export default function AdminPage() {
           </form>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/40">
-          <h2 className="text-2xl font-semibold text-slate-900">Historial de stock</h2>
-          <p className="mt-2 text-sm text-slate-600">Registros recientes de actualizaciones y creaciones de inventario.</p>
-          <div className="mt-6 overflow-x-auto rounded-3xl border border-slate-100 bg-slate-50">
-            <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-700">
-              <thead className="bg-slate-100 text-slate-900">
+        <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
+          <h2 className="text-2xl font-semibold text-white">Historial de stock</h2>
+          <p className="mt-2 text-sm text-purple-100/80">Registros recientes de actualizaciones y creaciones de inventario.</p>
+          <div className="mt-6 overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/80">
+            <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-purple-100">
+              <thead className="bg-slate-900 text-purple-100/80">
                 <tr>
                   <th className="px-5 py-4 font-medium">Producto</th>
                   <th className="px-5 py-4 font-medium">Operación</th>
@@ -422,11 +353,11 @@ export default function AdminPage() {
                 {historial.length > 0 ? (
                   historial.map((item) => (
                     <tr key={item.id} className="border-t border-slate-200 bg-white">
-                      <td className="px-5 py-4 font-semibold text-slate-900">{item.producto}</td>
-                      <td className="px-5 py-4 text-slate-700 capitalize">{item.operacion}</td>
-                      <td className="px-5 py-4 text-slate-700">{item.cantidad_antes}</td>
-                      <td className="px-5 py-4 text-slate-700">{item.cantidad_despues}</td>
-                      <td className="px-5 py-4 text-slate-600">{formatRelativeTime(item.creado_en)}</td>
+                      <td className="px-5 py-4 font-semibold text-white">{item.producto}</td>
+                      <td className="px-5 py-4 text-purple-100 capitalize">{item.operacion}</td>
+                      <td className="px-5 py-4 text-purple-100">{item.cantidad_antes}</td>
+                      <td className="px-5 py-4 text-purple-100">{item.cantidad_despues}</td>
+                      <td className="px-5 py-4 text-purple-200">{formatRelativeTime(item.creado_en)}</td>
                     </tr>
                   ))
                 ) : (
