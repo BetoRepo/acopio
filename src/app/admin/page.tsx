@@ -1,5 +1,6 @@
-'use client';
+ 'use client';
 
+import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { supabaseClient } from '../../lib/supabaseClient';
 import { InventarioHistorialRow, InventarioRow } from '../../types/database.types';
@@ -31,6 +32,7 @@ export default function AdminPage() {
   const [nuevaCantidad, setNuevaCantidad] = useState('');
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [metaDiaria, setMetaDiaria] = useState('');
   const [historial, setHistorial] = useState<InventarioHistorialRow[]>([]);
   const [productos, setProductos] = useState<InventarioRow[]>([]);
   const [selectedProductoId, setSelectedProductoId] = useState('');
@@ -64,6 +66,38 @@ export default function AdminPage() {
     setProductos(typed);
     if (typed.length > 0) setSelectedProductoId(typed[0].id);
   }
+
+  const handleGuardarMeta = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMensaje(null);
+    setLoading(true);
+
+    const valor = Number(metaDiaria);
+    if (Number.isNaN(valor) || valor < 0) {
+      setMensaje('Ingresa una meta válida (número mayor o igual a 0).');
+      setLoading(false);
+      return;
+    }
+
+    // Intentar actualizar primero
+    const { error } = await supabaseClient.from('configuracion_home').update({ meta_termometro_global: valor }).eq('id_tipo', 'principal');
+
+    if (error) {
+      // Si falla update, intentar insertar
+      const insertRes = await supabaseClient.from('configuracion_home').insert([
+        { id_tipo: 'principal', tarea_del_dia: '', meta_termometro_global: valor, recaudado_termometro_global: 0 },
+      ]);
+      if (insertRes.error) {
+        setMensaje(`No se pudo guardar la meta: ${insertRes.error.message}`);
+        setLoading(false);
+        return;
+      }
+    }
+
+    setMensaje('Meta diaria guardada correctamente.');
+    setMetaDiaria('');
+    setLoading(false);
+  };
 
   const handleActualizarStock = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -217,6 +251,32 @@ export default function AdminPage() {
         </div>
 
         <div className="grid gap-8">
+          <div className="flex items-center justify-between gap-4">
+            <form onSubmit={handleGuardarMeta} className="flex items-center gap-3">
+              <label className="flex items-center gap-2">
+                <span className="text-sm text-purple-200/90">Meta diaria</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={metaDiaria}
+                  onChange={(e) => setMetaDiaria(e.target.value)}
+                  className="ml-2 w-36 rounded-2xl border border-slate-700 bg-slate-950/90 px-3 py-2 text-sm text-white outline-none"
+                  placeholder="Ej. 100"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex items-center justify-center rounded-2xl bg-violet-500 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-600 disabled:opacity-60"
+              >
+                {loading ? 'Guardando...' : 'Definir meta diaria'}
+              </button>
+            </form>
+
+            <Link href="/" className="inline-flex items-center gap-2 rounded-2xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+              Ir al inicio
+            </Link>
+          </div>
           <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
             <h2 className="text-2xl font-semibold text-white">Resumen de inventario</h2>
             <p className="mt-2 text-sm text-purple-200/90">Aquí puedes ver rápidamente cuántos productos tienes registrados y la cantidad total disponible.</p>
@@ -384,23 +444,23 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {historial.length > 0 ? (
-                  historial.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-200 bg-white">
-                      <td className="px-5 py-4 font-semibold text-white">{item.producto}</td>
-                      <td className="px-5 py-4 text-purple-200 capitalize">{item.operacion}</td>
-                      <td className="px-5 py-4 text-purple-200">{item.cantidad_antes}</td>
-                      <td className="px-5 py-4 text-purple-200">{item.cantidad_despues}</td>
-                      <td className="px-5 py-4 text-purple-300">{formatRelativeTime(item.creado_en)}</td>
+                  {historial.length > 0 ? (
+                    historial.map((item) => (
+                      <tr key={item.id} className="border-t border-slate-700 bg-slate-950/10">
+                        <td className="px-5 py-4 font-semibold text-slate-100">{item.producto}</td>
+                        <td className="px-5 py-4 text-slate-200 capitalize">{item.operacion}</td>
+                        <td className="px-5 py-4 text-slate-200">{item.cantidad_antes}</td>
+                        <td className="px-5 py-4 text-slate-200">{item.cantidad_despues}</td>
+                        <td className="px-5 py-4 text-slate-300">{formatRelativeTime(item.creado_en)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="px-5 py-6 text-slate-200" colSpan={5}>
+                        No hay registros.
+                      </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-slate-500">
-                      No se han registrado cambios en el historial aún.
-                    </td>
-                  </tr>
-                )}
+                  )}
               </tbody>
             </table>
           </div>
