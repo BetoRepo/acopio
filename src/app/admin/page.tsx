@@ -55,6 +55,9 @@ export default function AdminPage() {
     loadProductos();
   }, []);
 
+  const totalItems = productos.length;
+  const totalCantidad = productos.reduce((sum, producto) => sum + (producto.cantidad_actual ?? 0), 0);
+
   async function loadProductos() {
     const { data } = await supabaseClient.from('inventario').select('*').order('producto', { ascending: true });
     const typed = (data ?? []) as InventarioRow[];
@@ -210,16 +213,47 @@ export default function AdminPage() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
         <div className="rounded-[2rem] border border-purple-500/30 bg-white/5 p-8 shadow-xl shadow-purple-950/30 backdrop-blur-sm">
           <h1 className="text-3xl font-semibold text-white">Panel de administración</h1>
-          <p className="mt-2 text-sm text-purple-100/80">Desde aquí puedes actualizar el inventario y gestionar donativos de forma sencilla.</p>
+          <p className="mt-2 text-sm text-purple-200/90">Desde aquí puedes actualizar el inventario y gestionar donativos de forma sencilla.</p>
         </div>
 
         <div className="grid gap-8">
+          <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
+            <h2 className="text-2xl font-semibold text-white">Resumen de inventario</h2>
+            <p className="mt-2 text-sm text-purple-200/90">Aquí puedes ver rápidamente cuántos productos tienes registrados y la cantidad total disponible.</p>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-purple-400/20 bg-slate-950/70 p-5">
+                <p className="text-sm uppercase tracking-[0.3em] text-purple-400">Items registrados</p>
+                <p className="mt-3 text-3xl font-semibold text-white">{totalItems}</p>
+              </div>
+              <div className="rounded-3xl border border-purple-400/20 bg-slate-950/70 p-5">
+                <p className="text-sm uppercase tracking-[0.3em] text-purple-400">Cantidad total</p>
+                <p className="mt-3 text-3xl font-semibold text-white">{totalCantidad}</p>
+              </div>
+            </div>
+            <div className="mt-6 rounded-3xl border border-white/10 bg-slate-950/80 p-5">
+              <p className="text-sm font-semibold text-purple-300">Detalle por producto</p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {productos.length > 0 ? (
+                  productos.map((producto) => (
+                    <div key={producto.id} className="rounded-2xl border border-purple-400/20 bg-white/5 p-4">
+                      <p className="font-semibold text-white">{producto.producto}</p>
+                      <p className="mt-1 text-sm text-purple-300">{producto.categoria}</p>
+                      <p className="mt-2 text-sm text-purple-200">Cantidad: {producto.cantidad_actual}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-purple-200/90">Todavía no hay productos registrados.</p>
+                )}
+              </div>
+            </div>
+          </section>
+
           <div className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
             <h2 className="text-2xl font-semibold text-white">Actualizar stock</h2>
-            <p className="mt-2 text-sm text-purple-100/80">Ingresa el nombre del producto y la cantidad actualizada. Si el producto no existe, se creará con valores básicos.</p>
+            <p className="mt-2 text-sm text-purple-200/90">Ingresa el nombre del producto y la cantidad actualizada. Si el producto no existe, se creará con valores básicos.</p>
             <form className="mt-6 space-y-5" onSubmit={handleActualizarStock}>
               <label className="block">
-                <span className="text-sm font-medium text-purple-100/80">Categoría</span>
+                <span className="text-sm font-medium text-purple-200/90">Categoría</span>
                 <select
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
@@ -232,7 +266,7 @@ export default function AdminPage() {
                 </select>
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-purple-100/80">Nombre del producto</span>
+                <span className="text-sm font-medium text-purple-200/90">Nombre del producto</span>
                 <input
                   value={productoName}
                   onChange={(event) => setProductoName(event.target.value)}
@@ -242,7 +276,7 @@ export default function AdminPage() {
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-purple-100/80">Nueva cantidad</span>
+                <span className="text-sm font-medium text-purple-200/90">Nueva cantidad</span>
                 <input
                   type="number"
                   value={nuevaCantidad}
@@ -265,17 +299,17 @@ export default function AdminPage() {
         </div>
 
         {mensaje ? (
-          <div className="rounded-3xl border border-purple-500/30 bg-white/5 px-6 py-4 text-sm text-purple-100 shadow-sm backdrop-blur-sm">
+          <div className="rounded-3xl border border-purple-500/30 bg-white/5 px-6 py-4 text-sm text-purple-200 shadow-sm backdrop-blur-sm">
             {mensaje}
           </div>
         ) : null}
 
         <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
           <h2 className="text-2xl font-semibold text-white">Enviar donativo</h2>
-          <p className="mt-2 text-sm text-purple-100/80">Registra una donación, resta el stock y anota a dónde fue donada.</p>
+          <p className="mt-2 text-sm text-purple-200/90">Registra una donación, resta el stock y anota a dónde fue donada.</p>
           <form className="mt-6 grid gap-4 md:grid-cols-4" onSubmit={handleEnviarDonativo}>
             <label className="block">
-              <span className="text-sm font-medium text-purple-100/80">Producto</span>
+              <span className="text-sm font-medium text-purple-200/90">Producto</span>
               <select
                 value={selectedProductoId}
                 onChange={(e) => setSelectedProductoId(e.target.value)}
@@ -290,7 +324,7 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-purple-100/80">Cantidad a enviar</span>
+              <span className="text-sm font-medium text-purple-200/90">Cantidad a enviar</span>
               <input
                 type="number"
                 value={donationQuantity}
@@ -302,7 +336,7 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-purple-100/80">Destino / Comunidad</span>
+              <span className="text-sm font-medium text-purple-200/90">Destino / Comunidad</span>
               <input
                 value={donationDestination}
                 onChange={(e) => setDonationDestination(e.target.value)}
@@ -313,7 +347,7 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-purple-100/80">Persona destinataria</span>
+              <span className="text-sm font-medium text-purple-200/90">Persona destinataria</span>
               <input
                 value={donationRecipient}
                 onChange={(e) => setDonationRecipient(e.target.value)}
@@ -337,10 +371,10 @@ export default function AdminPage() {
 
         <section className="rounded-[2rem] border border-purple-500/30 bg-white/10 p-8 shadow-xl shadow-purple-950/20 backdrop-blur-sm">
           <h2 className="text-2xl font-semibold text-white">Historial de stock</h2>
-          <p className="mt-2 text-sm text-purple-100/80">Registros recientes de actualizaciones y creaciones de inventario.</p>
+          <p className="mt-2 text-sm text-purple-200/90">Registros recientes de actualizaciones y creaciones de inventario.</p>
           <div className="mt-6 overflow-x-auto rounded-3xl border border-white/10 bg-slate-950/80">
-            <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-purple-100">
-              <thead className="bg-slate-900 text-purple-100/80">
+            <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-purple-200">
+              <thead className="bg-slate-900 text-purple-200/90">
                 <tr>
                   <th className="px-5 py-4 font-medium">Producto</th>
                   <th className="px-5 py-4 font-medium">Operación</th>
@@ -354,10 +388,10 @@ export default function AdminPage() {
                   historial.map((item) => (
                     <tr key={item.id} className="border-t border-slate-200 bg-white">
                       <td className="px-5 py-4 font-semibold text-white">{item.producto}</td>
-                      <td className="px-5 py-4 text-purple-100 capitalize">{item.operacion}</td>
-                      <td className="px-5 py-4 text-purple-100">{item.cantidad_antes}</td>
-                      <td className="px-5 py-4 text-purple-100">{item.cantidad_despues}</td>
-                      <td className="px-5 py-4 text-purple-200">{formatRelativeTime(item.creado_en)}</td>
+                      <td className="px-5 py-4 text-purple-200 capitalize">{item.operacion}</td>
+                      <td className="px-5 py-4 text-purple-200">{item.cantidad_antes}</td>
+                      <td className="px-5 py-4 text-purple-200">{item.cantidad_despues}</td>
+                      <td className="px-5 py-4 text-purple-300">{formatRelativeTime(item.creado_en)}</td>
                     </tr>
                   ))
                 ) : (

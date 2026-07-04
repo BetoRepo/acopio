@@ -61,8 +61,11 @@ export default function HomePage() {
     };
   }, []);
 
-  const meta = configuracion?.meta_termometro_global ?? 0;
-  const recaudado = configuracion?.recaudado_termometro_global ?? 0;
+  const totalInventario = inventario.reduce((sum, item) => sum + (item.cantidad_actual ?? 0), 0);
+  const meta = configuracion?.meta_termometro_global && configuracion.meta_termometro_global > 0
+    ? configuracion.meta_termometro_global
+    : Math.max(100, totalInventario);
+  const recaudado = totalInventario;
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-violet-950 via-violet-900 to-purple-950 px-4 py-8 sm:px-6 lg:px-8 text-slate-100">

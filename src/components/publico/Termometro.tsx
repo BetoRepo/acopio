@@ -4,7 +4,7 @@ interface TermometroProps {
 }
 
 export default function Termometro({ meta, recaudado }: TermometroProps) {
-  const porcentaje = meta > 0 ? Math.min(100, Math.round((recaudado / meta) * 100)) : 0;
+  const porcentaje = meta > 0 ? Math.min(100, Math.round((recaudado / meta) * 100)) : recaudado > 0 ? 100 : 0;
 
   return (
     <section className="mx-auto w-full max-w-5xl rounded-3xl border border-emerald-200 bg-white/95 p-8 shadow-xl shadow-emerald-200/40 backdrop-blur-sm">
